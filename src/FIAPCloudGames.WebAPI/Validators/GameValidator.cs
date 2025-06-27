@@ -1,4 +1,4 @@
-﻿using FIAPCloudGames.Domain.Requests;
+﻿using FIAPCloudGames.Application.Requests;
 using FluentValidation;
 
 namespace FIAPCloudGames.WebAPI.Validators;
@@ -25,7 +25,7 @@ public class CreateGameRequestValidator : AbstractValidator<CreateGameRequest>
             .WithMessage("A 'Empresa de fabricação' deve ter no mínimo 10 caracteres.")
             .MaximumLength(255)
             .WithMessage("A 'Empresa de fabricação' deve ter no máximo 255 caracteres.");
-        
+
         RuleFor(x => x.Price)
             .NotNull()
             .GreaterThan(0)

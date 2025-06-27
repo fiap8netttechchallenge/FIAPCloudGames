@@ -1,7 +1,7 @@
-﻿using FIAPCloudGames.Domain.Requests;
-using FIAPCloudGames.Domain.Responses;
+﻿using FIAPCloudGames.Application.Requests;
+using FIAPCloudGames.Application.Responses;
 
-namespace FIAPCloudGames.Domain.Interfaces;
+namespace FIAPCloudGames.Application.Services.Interfaces;
 
 public interface IUserService
 {

@@ -1,4 +1,4 @@
-using FIAPCloudGames.Domain.Requests;
+using FIAPCloudGames.Application.Requests;
 using FIAPCloudGames.WebAPI.Validators;
 using FluentValidation.TestHelper;
 

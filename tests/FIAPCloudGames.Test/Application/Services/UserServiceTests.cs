@@ -1,12 +1,13 @@
 using AutoMapper;
+using FIAPCloudGames.Application.Requests;
+using FIAPCloudGames.Application.Responses;
 using FIAPCloudGames.Application.Services;
+using FIAPCloudGames.Application.Services.Interfaces;
 using FIAPCloudGames.Application.Utils;
 using FIAPCloudGames.Domain.Entities;
 using FIAPCloudGames.Domain.Enums;
 using FIAPCloudGames.Domain.Interfaces;
 using FIAPCloudGames.Domain.Repositores;
-using FIAPCloudGames.Domain.Requests;
-using FIAPCloudGames.Domain.Responses;
 using Moq;
 using System.Linq.Expressions;
 
@@ -106,7 +107,7 @@ public class UserServiceTests
     public async Task Login_ShouldReturnTokenResponse_WhenCredentialsAreValid()
     {
         var request = new LoginRequest { Email = "test@test.com", Password = "123" };
-        _userRepositoryMock.Setup(r => r.Login(request.Email, Utils.HashPassword("123"))).ReturnsAsync(new User() { Id = 1, IsActive = true});
+        _userRepositoryMock.Setup(r => r.Login(request.Email, Utils.HashPassword("123"))).ReturnsAsync(new User() { Id = 1, IsActive = true });
 
         var result = await _userService.Login(request);
 
@@ -118,7 +119,7 @@ public class UserServiceTests
     public async Task Login_ShouldThrowException_WhenCredentialsAreInvalid()
     {
         var request = new LoginRequest { Email = "test@test.com", Password = "wrong" };
-        _userRepositoryMock.Setup(r => r.Login(request.Email, request.Password)).ReturnsAsync(new User() { Id = 1, IsActive = false});
+        _userRepositoryMock.Setup(r => r.Login(request.Email, request.Password)).ReturnsAsync(new User() { Id = 1, IsActive = false });
 
         await Assert.ThrowsAsync<ArgumentException>(() => _userService.Login(request));
     }

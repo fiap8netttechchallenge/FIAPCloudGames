@@ -1,7 +1,9 @@
-﻿namespace FIAPCloudGames.Domain.Requests;
+﻿namespace FIAPCloudGames.Application.Responses;
 
-public sealed class CreateGameRequest
+public sealed class GameResponse
 {
+    public int Id { get; set; }  
+
     public string Name { get; set; } = string.Empty;
 
     public string Description { get; set; } = string.Empty;
@@ -13,4 +15,6 @@ public sealed class CreateGameRequest
     public bool IsActive { get; set; }
 
     public int UserId { get; set; }
+
+    public DateTime CreatedAt { get; set; }
 }

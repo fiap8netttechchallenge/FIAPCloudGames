@@ -1,6 +1,6 @@
-﻿using FIAPCloudGames.Domain.Interfaces;
-using FIAPCloudGames.Domain.Requests;
-using FIAPCloudGames.Domain.Responses;
+﻿using FIAPCloudGames.Application.Requests;
+using FIAPCloudGames.Application.Responses;
+using FIAPCloudGames.Application.Services.Interfaces;
 using FIAPCloudGames.WebAPI.Contracts;
 using FIAPCloudGames.WebAPI.Validators;
 using Microsoft.AspNetCore.Mvc;

@@ -1,4 +1,4 @@
-﻿using FIAPCloudGames.Domain.Interfaces;
+﻿using FIAPCloudGames.Application.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

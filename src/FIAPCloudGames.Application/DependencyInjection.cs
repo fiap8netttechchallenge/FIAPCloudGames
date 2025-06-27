@@ -1,5 +1,5 @@
 ﻿using FIAPCloudGames.Application.Services;
-using FIAPCloudGames.Domain.Interfaces;
+using FIAPCloudGames.Application.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FIAPCloudGames.Application;

@@ -1,22 +1,23 @@
 ﻿using AutoMapper;
+using FIAPCloudGames.Application.Requests;
+using FIAPCloudGames.Application.Responses;
+using FIAPCloudGames.Application.Services.Interfaces;
 using FIAPCloudGames.Domain.Entities;
 using FIAPCloudGames.Domain.Interfaces;
 using FIAPCloudGames.Domain.Repositores;
-using FIAPCloudGames.Domain.Requests;
-using FIAPCloudGames.Domain.Responses;
 using System.Linq.Expressions;
 
 namespace FIAPCloudGames.Application.Services;
 
-public class GameService: IGameService
+public class GameService : IGameService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IGameRepository _gameRepository;
     private readonly IJwtProvider _jwtProvider;
 
-    public GameService(IUnitOfWork unitOfWork, 
-        IMapper mapper, 
+    public GameService(IUnitOfWork unitOfWork,
+        IMapper mapper,
         IGameRepository gameRepository,
         IJwtProvider jwtProvider)
     {
@@ -113,9 +114,9 @@ public class GameService: IGameService
         if (!exists)
             throw new Exception("The game doesn't exist.");
 
-        Expression<Func<Game, bool>> predicate = x => x.Id == id; 
+        Expression<Func<Game, bool>> predicate = x => x.Id == id;
         var game = await _gameRepository.GetAsync(predicate);
-        
+
         game.IsActive = false;
 
         await _gameRepository.UpdateAsync(game);

@@ -1,6 +1,8 @@
-﻿namespace FIAPCloudGames.Domain.Responses;
+﻿using FIAPCloudGames.Domain.Enums;
 
-public sealed class UserResponse
+namespace FIAPCloudGames.Application.Requests;
+
+public sealed class CreateUserRequest
 {
     public int Id { get; set; }
 
@@ -8,11 +10,11 @@ public sealed class UserResponse
 
     public string Login { get; set; } = string.Empty;
 
+    public string Password { get; set; } = string.Empty;
+
     public string Email { get; set; } = string.Empty;
 
-    public int UserType { get; set; }
+    public UserRole UserType { get; set; }
 
     public bool IsActive { get; set; }
-
-    public DateTime CreatedAt { get; set; }
 }

@@ -1,4 +1,4 @@
-﻿namespace FIAPCloudGames.Domain.Interfaces;
+﻿namespace FIAPCloudGames.Application.Services.Interfaces;
 
 public interface IJwtProvider
 {

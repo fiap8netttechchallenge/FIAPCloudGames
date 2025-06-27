@@ -1,6 +1,6 @@
 ﻿using FIAPCloudGames.Domain.Enums;
 
-namespace FIAPCloudGames.Domain.Requests;
+namespace FIAPCloudGames.Application.Requests;
 
 public sealed class UpdateUserRequest
 {

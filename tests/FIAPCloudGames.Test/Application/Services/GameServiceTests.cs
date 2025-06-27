@@ -1,10 +1,11 @@
 using AutoMapper;
+using FIAPCloudGames.Application.Requests;
+using FIAPCloudGames.Application.Responses;
 using FIAPCloudGames.Application.Services;
+using FIAPCloudGames.Application.Services.Interfaces;
 using FIAPCloudGames.Domain.Entities;
 using FIAPCloudGames.Domain.Interfaces;
 using FIAPCloudGames.Domain.Repositores;
-using FIAPCloudGames.Domain.Requests;
-using FIAPCloudGames.Domain.Responses;
 using Moq;
 using System.Linq.Expressions;
 

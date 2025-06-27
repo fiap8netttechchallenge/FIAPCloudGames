@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using FIAPCloudGames.Application.Requests;
+using FIAPCloudGames.Application.Responses;
 using FIAPCloudGames.Domain.Entities;
-using FIAPCloudGames.Domain.Requests;
-using FIAPCloudGames.Domain.Responses;
 
 namespace FIAPCloudGames.Infrastructure.Mapper;
 
