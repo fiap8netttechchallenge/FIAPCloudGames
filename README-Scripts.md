@@ -37,6 +37,7 @@ dev-start.bat
 | **Health Check** | http://localhost:8080/health | - |
 | **Grafana** | http://localhost:3000 | admin/admin |
 | **Prometheus** | http://localhost:9090 | - |
+| **Loki** | http://localhost:3100 | - |
 | **SQL Server** | localhost:1433 | sa/P@ssw0rdF1@PT3ch |
 
 ## 🛠️ Comandos Úteis
@@ -123,6 +124,7 @@ Após executar qualquer script, você verá uma tela organizada assim:
    📊 Grafana:        http://localhost:3000
       👤 Usuário: admin | 🔐 Senha: admin
    🎯 Prometheus:     http://localhost:9090
+   📦 Loki:          http://localhost:3100/ready
 
 🔹 Banco de Dados:
    🗄️ SQL Server:     localhost:1433

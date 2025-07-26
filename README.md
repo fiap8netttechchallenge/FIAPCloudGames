@@ -1,4 +1,3 @@
-
 FIAP - 8nett Tech Challenge
 FIAPCloudGames
 
@@ -63,24 +62,51 @@ A estrutura do projeto é organizada da seguinte forma:
 ### **Pré-requisitos**
 
 - .NET SDK 8.0 ou superior
-- PostgreSQL
+- SQLServer (ou Docker para execução via containers)
 - VS Code, Visual Studio 2022 (ou qualquer IDE de sua preferência)
 - Git
 
-### **Passos para Execução**
+### **Passos Iniciais**
 
 1. **Clone o Repositório:**
-   - `git clone https://github.com/fiap8netttechchallenge/FIAPCloudGames.git`
-   - `cd nome-do-repositorio`
+   ```bash
+   git clone https://github.com/fiap8netttechchallenge/FIAPCloudGames.git
+   cd FIAPCloudGames
+   ```
+
+### **🚀 Opção 1: Execução Rápida com Scripts Automatizados (Recomendado)**
+
+Para uma configuração mais rápida e automatizada do ambiente de desenvolvimento, utilize nossos scripts especializados:
+
+> **📋 [Consulte o guia completo de Scripts de Desenvolvimento - README-Scripts.md](README-Scripts.md)**
+
+Os scripts automatizam todo o processo:
+- ✅ Verificação e configuração do Docker
+- 🧹 Limpeza do ambiente
+- 🔨 Build e inicialização de todos os serviços
+- 🏥 Testes de saúde automáticos
+- 📊 Monitoramento integrado (Grafana + Prometheus)
+- 🌐 URLs organizadas para acesso rápido
+
+**Execute um dos scripts disponíveis:**
+- **Linux/macOS:** `./dev-start.sh`
+- **Windows:** `dev-start.bat`
+	- Acesse a documentação da API em: http://localhost:8080/swagger
+
+### **⚙️ Opção 2: Execução Manual**
+
+Se preferir configurar manualmente ou não tiver Docker disponível:
 
 2. **Configuração do Banco de Dados:**
    - Configure uma instância dos SQLServer e crie um database.
    - No arquivo `appsettings.json`, configure a string de conexão do SQLServer de acordo com os parâmetros de acesso da instância e da base de dados criada.
    - Entre no diretório de infraestrutura da aplicação `cd src/FIAPCloudGames.Infrastructure/` e o comando `Update-Database` para que a configuração das Migrations crie as tabelas e popule com os dados básicos.
 
-4. **Executar a API:**
-   - `cd src/FIAPCloudGames.WebAPI/`
-   - `dotnet run`
+3. **Executar a API:**
+   ```bash
+   cd src/FIAPCloudGames.WebAPI/
+   dotnet run
+   ```
    - Acesse a documentação da API em: http://localhost:5001/swagger
 
 ## **7. Instruções de Configuração**
@@ -94,6 +120,12 @@ A documentação da API está disponível através do Swagger. Após iniciar a A
 
 http://localhost:5001/swagger
 
-## **9. Avaliação**
+## **9. Monitoramento com Grafana**
+
+> **📋 [Consulte o guia completo de configuração do Grafana - README-monitoring.md](README-monitoring.md)**
+
+Este guia descreve como configurar o Grafana para exibir métricas e logs utilizando as fontes de dados **Prometheus** e **Loki**.
+
+## **10. Avaliação**
 
 - Para feedbacks ou dúvidas utilize o recurso de Issues
