@@ -16,7 +16,8 @@ Selecione “Prometheus”
 
 ![Imagem 7](./monitoring/images/imagem7.png)
 
-Em “Connection”, coloque a URL do servidor do Prometheus, no caso do servidor configurado no “docker-compose”, será . Em seguida clique em “Save & test” no fim da página.
+Em “Connection”, coloque a URL do servidor do Prometheus, no caso do servidor configurado no “docker-compose”, será `http://prometheus:9090`.
+Em seguida clique em “Save & test” no fim da página.
 
 ![Imagem 3](./monitoring/images/imagem3.png)
 
@@ -28,7 +29,8 @@ Em seguida, clique no botão “Add new data source”.
 
 ![Imagem 10](./monitoring/images/imagem10.png)
 
-Em “Connection”, coloque a URL do servidor do Loki, no caso do servidor configurado no “docker-compose”, será . Em seguida clique em “Save & test” no fim da página.
+Em “Connection”, coloque a URL do servidor do Loki, no caso do servidor configurado no “docker-compose”, será `http://loki:3100`.
+Em seguida clique em “Save & test” no fim da página.
 
 ![Imagem 6](./monitoring/images/imagem6.png)
 

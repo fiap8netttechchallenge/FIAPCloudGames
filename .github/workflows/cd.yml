@@ -8,7 +8,8 @@ on:
 env:
   DOTNET_VERSION: '8.0.x'
   AZURE_WEBAPP_NAME: 'fiap-cloud-games'
-  DOCKER_IMAGE_NAME: 'fiap-cloud-games'
+  DOCKER_IMAGE_NAME: '${{ vars.DOCKER_USERNAME }}/fiap-cloud-games'
+  DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
 
 jobs:
   build-and-deploy:
@@ -31,21 +32,54 @@ jobs:
         dotnet build --configuration Release --no-restore
         dotnet publish -c Release -o ./publish --no-build
 
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ env.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
     - name: Build Docker image
       run: |
         docker build -t ${{ env.DOCKER_IMAGE_NAME }}:latest .
         docker tag ${{ env.DOCKER_IMAGE_NAME }}:latest ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
     - name: Push Docker image
       run: |
         docker push ${{ env.DOCKER_IMAGE_NAME }}:latest
         docker push ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Configure Azure Web App Settings
+      uses: azure/appservice-settings@v1
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        app-settings-json: |
+          [
+            {
+              "name": "ConnectionStrings__DefaultConnection",
+              "value": "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+            },
+            {
+              "name": "Jwt__Key",
+              "value": "${{ secrets.JWT_KEY }}"
+            },
+            {
+              "name": "Jwt__Issuer",
+              "value": "${{ vars.JWT_ISSUER }}"
+            },
+            {
+              "name": "ASPNETCORE_ENVIRONMENT",
+              "value": "Production"
+            },
+            {
+              "name": "Serilog__WriteTo__1__Args__uri",
+              "value": "${{ vars.LOKI_URI }}"
+            }
+          ]
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
@@ -53,9 +87,3 @@ jobs:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
         images: '${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}'
-
-    - name: Run database migrations
-      run: |
-        echo "Running database migrations..."
-        # Adicione aqui os comandos para executar migrations
-        # dotnet ef database update --connection "${{ secrets.PRODUCTION_CONNECTION_STRING }}"
