@@ -7,7 +7,8 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.x'
-  AZURE_WEBAPP_NAME: 'fiap-cloud-games'
+  AZURE_WEBAPP_NAME: '${{ vars.AZURE_WEBAPP_NAME }}'
+  AZURE_RESOURCE_GROUP: '${{ vars.AZURE_RESOURCE_GROUP }}'
   DOCKER_IMAGE_NAME: '${{ vars.DOCKER_USERNAME }}/fiap-cloud-games'
   DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
 
@@ -18,6 +19,21 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+
+    # - name: Debug Variables (for troubleshooting)
+    #   run: |
+    #     echo "Azure WebApp Name: ${{ env.AZURE_WEBAPP_NAME }}"
+    #     echo "Azure Resource Group: ${{ env.AZURE_RESOURCE_GROUP }}"
+    #     echo "Docker Username: ${{ env.DOCKER_USERNAME }}"
+    #     echo "Docker Image: ${{ env.DOCKER_IMAGE_NAME }}"
+    #     echo "JWT Issuer: ${{ vars.JWT_ISSUER }}"
+    #     echo "Loki URI: ${{ vars.LOKI_URI }}"
+    #     echo "Secrets are hidden, but checking if they exist:"
+    #     echo "Azure SQL Connection String exists: ${{ secrets.AZURE_SQL_CONNECTION_STRING != '' }}"
+    #     echo "JWT Key exists: ${{ secrets.JWT_KEY != '' }}"
+    #     echo "Docker Password exists: ${{ secrets.DOCKER_PASSWORD != '' }}"
+    #     echo "Azure Credentials exists: ${{ secrets.AZURE_CREDENTIALS != '' }}"
+    #     echo "Azure Publish Profile exists: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE != '' }}"
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -54,36 +70,47 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Configure Azure Web App Settings
-      uses: azure/appservice-settings@v1
-      with:
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        app-settings-json: |
-          [
-            {
-              "name": "ConnectionStrings__DefaultConnection",
-              "value": "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
-            },
-            {
-              "name": "Jwt__Key",
-              "value": "${{ secrets.JWT_KEY }}"
-            },
-            {
-              "name": "Jwt__Issuer",
-              "value": "${{ vars.JWT_ISSUER }}"
-            },
-            {
-              "name": "ASPNETCORE_ENVIRONMENT",
-              "value": "Production"
-            },
-            {
-              "name": "Serilog__WriteTo__1__Args__uri",
-              "value": "${{ vars.LOKI_URI }}"
-            }
-          ]
+      run: |
+        echo "Configurando vari�veis de ambiente no Azure Web App..."
+        
+        # Verificar se as vari�veis necess�rias est�o definidas
+        if [ -z "${{ env.AZURE_RESOURCE_GROUP }}" ]; then
+          echo "ERROR: AZURE_RESOURCE_GROUP n�o est� definido!"
+          exit 1
+        fi
+        
+        if [ -z "${{ env.AZURE_WEBAPP_NAME }}" ]; then
+          echo "ERROR: AZURE_WEBAPP_NAME n�o est� definido!"
+          exit 1
+        fi
+        
+        # Configurar vari�veis de ambiente usando Azure CLI
+        az webapp config appsettings set \
+          --resource-group "${{ env.AZURE_RESOURCE_GROUP }}" \
+          --name "${{ env.AZURE_WEBAPP_NAME }}" \
+          --settings \
+            "ConnectionStrings__DefaultConnection=${{ secrets.AZURE_SQL_CONNECTION_STRING }}" \
+            "Jwt__Key=${{ secrets.JWT_KEY }}" \
+            "Jwt__Issuer=${{ vars.JWT_ISSUER }}" \
+            "ASPNETCORE_ENVIRONMENT=Production" \
+            "Serilog__WriteTo__1__Args__uri=${{ vars.LOKI_URI }}"
+        
+        echo "Vari�veis configuradas com sucesso!"
 
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        images: '${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}'
+    - name: Configure Docker Registry Settings
+      run: |
+        echo "Configurando credenciais do Docker Registry..."
+        
+        # Configurar credenciais do Docker Hub no Azure Web App
+        az webapp config container set \
+          --resource-group "${{ env.AZURE_RESOURCE_GROUP }}" \
+          --name "${{ env.AZURE_WEBAPP_NAME }}" \
+          --docker-custom-image-name "${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}" \
+          --docker-registry-server-url "https://index.docker.io/v1/" \
+          --docker-registry-server-user "${{ env.DOCKER_USERNAME }}" \
+          --docker-registry-server-password "${{ secrets.DOCKER_PASSWORD }}"
+        
+        echo "Docker Registry configurado com sucesso!"
+
+    - name: Restart Azure Web App
+      run: az webapp restart --name "${{ env.AZURE_WEBAPP_NAME }}" --resource-group "${{ env.AZURE_RESOURCE_GROUP }}"

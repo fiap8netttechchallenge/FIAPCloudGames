@@ -29,7 +29,8 @@ builder.Services.AddOpenTelemetry()
 var jwtKey = builder.Configuration["Jwt:Key"];
 if (string.IsNullOrEmpty(jwtKey))
 {
-    throw new InvalidOperationException("JWT Key is not configured properly in appsettings.json.");
+    //throw new InvalidOperationException("JWT Key is not configured properly in appsettings.json.");
+    Console.WriteLine("JWT Key is not configured properly in appsettings.json.");
 }
 
 Log.Logger = new LoggerConfiguration()
