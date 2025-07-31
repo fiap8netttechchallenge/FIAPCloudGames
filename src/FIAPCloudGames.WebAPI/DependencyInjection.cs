@@ -1,5 +1,6 @@
 ﻿using FIAPCloudGames.Domain.Requests;
 using FIAPCloudGames.WebAPI.Validators;
+using FIAPCloudGames.WebAPI.Services;
 using FluentValidation;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
@@ -15,6 +16,9 @@ public static class DependencyInjection
         services.AddScoped<IValidator<CreateUserRequest>, CreateUserRequestValidator>();
         services.AddScoped<IValidator<CreateGameRequest>, CreateGameRequestValidator>();
         services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
+        
+        services.AddHostedService<DatabaseMigrationService>();
+        
         services.AddSwaggerConfiguration();
 
         return services;

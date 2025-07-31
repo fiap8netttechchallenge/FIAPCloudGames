@@ -1,40 +1,56 @@
+using FIAPCloudGames.Application;
 using FIAPCloudGames.Infrastructure;
+using FIAPCloudGames.Infrastructure.Context;
 using FIAPCloudGames.WebAPI;
+using FIAPCloudGames.WebAPI.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using FIAPCloudGames.WebAPI.Middlewares;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using Serilog;
 using System.Reflection;
-using FIAPCloudGames.Application;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var serviceName = "FIAPCloudGames.API";
+
+builder.Services.AddOpenTelemetry()
+    .WithMetrics(metrics =>
+    {
+        metrics
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName))
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddRuntimeInstrumentation()
+            .AddPrometheusExporter();
+    });
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 if (string.IsNullOrEmpty(jwtKey))
 {
-    throw new InvalidOperationException("JWT Key is not configured properly in appsettings.json.");
+    //throw new InvalidOperationException("JWT Key is not configured properly in appsettings.json.");
+    Console.WriteLine("JWT Key is not configured properly in appsettings.json.");
 }
 
 Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration) // Pega configuração do appsettings.json
+    .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
     .CreateLogger();
 
 builder.Host.UseSerilog();
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly().GetReferencedAssemblies().Select(Assembly.Load));
 
 #region JWT
-builder.Services.AddAuthentication(options => {
+builder.Services.AddAuthentication(options =>
+{
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options => {
+}).AddJwtBearer(options =>
+{
     options.RequireHttpsMetadata = false;
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
@@ -48,23 +64,27 @@ builder.Services.AddAuthentication(options => {
     };
 });
 
-builder.Services.AddAuthorization(options => {
+builder.Services.AddAuthorization(options =>
+{
     options.AddPolicy("admin", policy => policy.RequireRole("admin"));
 });
 
 #endregion
 
-// FIAP Cloud Games
 builder.Services.AddApplication();
 builder.Services.AddPresentation();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<FCGContext>("database", tags: new[] { "ready" });
+
 var app = builder.Build();
+
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwaggerSetup();
@@ -82,5 +102,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();

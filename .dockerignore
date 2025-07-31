@@ -1,0 +1,17 @@
+**/.git
+**/.gitignore
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/out
+**/TestResults
+**/*.trx
+**/*.md
+**/Dockerfile*
+**/docker-compose*
+.dockerignore
+.env
+.env.local
+.env.production
+.env.staging
