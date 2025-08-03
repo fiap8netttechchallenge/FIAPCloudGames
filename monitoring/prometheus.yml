@@ -2,11 +2,21 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'fiap-cloud-games'
+  # - job_name: 'fiap-cloud-games-local'
+  #   static_configs:
+  #     - targets: ['app:8080']
+  #   metrics_path: /metrics
+  #   scrape_interval: 5s
+
+  - job_name: 'fiap-cloud-games-azure'
     static_configs:
-      - targets: ['app:8080']
+      - targets: ['techchallengephase2.azurewebsites.net:443']
+    scheme: https
     metrics_path: /metrics
-    scrape_interval: 5s
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    tls_config:
+      insecure_skip_verify: false
 
   - job_name: 'prometheus'
     static_configs:
